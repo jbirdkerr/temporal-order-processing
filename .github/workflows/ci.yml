@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+    branches: [main]
+
+env:
+  GO_VERSION: "1.26"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout=5m
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Verify modules
+        run: go mod verify
+
+      - name: Build server
+        run: go build -v ./cmd/server/...
+
+      - name: Build worker
+        run: go build -v ./cmd/worker/...
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    services:
+      # Temporal's dev server needs Cassandra or Postgres; use the
+      # all-in-one dev image that ships with an in-memory store so
+      # no extra DB service is required.
+      temporal:
+        image: temporalio/auto-setup:1.26
+        ports:
+          - "7233:7233"
+        options: >-
+          --health-cmd "tctl --address localhost:7233 cluster health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+
+    env:
+      TEMPORAL_HOST_PORT: localhost:7233
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Run tests
+        run: go test -v -race -count=1 -timeout=120s ./...
+
+      - name: Upload coverage
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+          retention-days: 7
+
+  vet:
+    name: Vet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: go vet
+        run: go vet ./...
