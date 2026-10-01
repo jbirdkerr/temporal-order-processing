@@ -12,9 +12,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/domain"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/observability"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/workflow"
+	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
+	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
+	"github.com/jbirdkerr/temporal-order-processing/internal/workflow"
 
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"

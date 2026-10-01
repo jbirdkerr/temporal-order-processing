@@ -1,4 +1,4 @@
-module gitlab.com/jbirdkerr/temporal-order-processing
+module github.com/jbirdkerr/temporal-order-processing
 
 go 1.25.4
 

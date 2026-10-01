@@ -5,8 +5,8 @@ package workflow
 import (
 	"time"
 
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/activity"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/domain"
+	"github.com/jbirdkerr/temporal-order-processing/internal/activity"
+	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )

@@ -9,8 +9,8 @@ import (
 	"math/rand"
 	"time"
 
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/domain"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/observability"
+	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
+	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
 	"go.temporal.io/sdk/activity"
 )
 
