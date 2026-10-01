@@ -1,2 +1,15 @@
 bin/*
 .pi/*
+
+# Test and Coverage Artifacts
+*.out
+coverage.html
+coverage.txt
+
+# Environment & Editor Files
+.env
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/

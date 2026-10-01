@@ -132,7 +132,9 @@ func OrderWorkflow(ctx workflow.Context, order *domain.Order) (*domain.WorkflowR
 			StartToCloseTimeout: 30 * time.Second,
 			RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 5},
 		})
-		workflow.ExecuteActivity(compCtx, activity.RefundPaymentActivity, result.PaymentID).Get(ctx, nil)
+		if refundErr := workflow.ExecuteActivity(compCtx, activity.RefundPaymentActivity, result.PaymentID).Get(ctx, nil); refundErr != nil {
+			logger.Error("Failed to refund payment during compensation", "orderID", order.ID, "error", refundErr)
+		}
 
 		result.Status = domain.OrderFailed
 		result.FailureReason = "Inventory unavailable: " + err.Error()
@@ -172,10 +174,14 @@ func OrderWorkflow(ctx workflow.Context, order *domain.Order) (*domain.WorkflowR
 				RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 5},
 			})
 			logger.Info("Compensating: Releasing inventory", "orderID", order.ID)
-			workflow.ExecuteActivity(compCtx, activity.ReleaseInventoryActivity, order).Get(ctx, nil)
+			if relErr := workflow.ExecuteActivity(compCtx, activity.ReleaseInventoryActivity, order).Get(ctx, nil); relErr != nil {
+				logger.Error("Failed to release inventory during compensation", "orderID", order.ID, "error", relErr)
+			}
 
 			logger.Info("Compensating: Refunding payment", "orderID", order.ID)
-			workflow.ExecuteActivity(compCtx, activity.RefundPaymentActivity, result.PaymentID).Get(ctx, nil)
+			if refundErr := workflow.ExecuteActivity(compCtx, activity.RefundPaymentActivity, result.PaymentID).Get(ctx, nil); refundErr != nil {
+				logger.Error("Failed to refund payment during compensation", "orderID", order.ID, "error", refundErr)
+			}
 
 			result.Status = domain.OrderFailed
 			result.FailureReason = "Inventory approval timed out"
@@ -220,10 +226,14 @@ func OrderWorkflow(ctx workflow.Context, order *domain.Order) (*domain.WorkflowR
 			RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 5},
 		})
 		logger.Info("Compensating: Releasing inventory", "orderID", order.ID)
-		workflow.ExecuteActivity(compCtx, activity.ReleaseInventoryActivity, order).Get(ctx, nil)
+		if relErr := workflow.ExecuteActivity(compCtx, activity.ReleaseInventoryActivity, order).Get(ctx, nil); relErr != nil {
+			logger.Error("Failed to release inventory during compensation", "orderID", order.ID, "error", relErr)
+		}
 
 		logger.Info("Compensating: Refunding payment", "orderID", order.ID)
-		workflow.ExecuteActivity(compCtx, activity.RefundPaymentActivity, result.PaymentID).Get(ctx, nil)
+		if refundErr := workflow.ExecuteActivity(compCtx, activity.RefundPaymentActivity, result.PaymentID).Get(ctx, nil); refundErr != nil {
+			logger.Error("Failed to refund payment during compensation", "orderID", order.ID, "error", refundErr)
+		}
 
 		result.Status = domain.OrderFailed
 		result.FailureReason = "Shipping failed: " + err.Error()
@@ -272,7 +282,9 @@ func OrderWorkflow(ctx workflow.Context, order *domain.Order) (*domain.WorkflowR
 		StartToCloseTimeout: 30 * time.Second,
 		RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 3},
 	})
-	workflow.ExecuteActivity(notifCtx, activity.SendNotificationActivity, order, result).Get(ctx, nil)
+	if notifErr := workflow.ExecuteActivity(notifCtx, activity.SendNotificationActivity, order, result).Get(ctx, nil); notifErr != nil {
+		logger.Warn("Failed to send completion notification", "orderID", order.ID, "error", notifErr)
+	}
 
 	logger.Info("Order workflow completed successfully", "orderID", order.ID)
 	return result, nil
