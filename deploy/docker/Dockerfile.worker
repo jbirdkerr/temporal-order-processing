@@ -1,0 +1,36 @@
+# syntax=docker/dockerfile:1
+
+# ── Build Stage ──
+FROM golang:1.26-alpine AS builder
+
+WORKDIR /src
+
+# Install certificates and build dependencies
+RUN apk --no-cache add ca-certificates git
+
+# Cache Go modules layer
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
+
+# Copy source tree and compile static binary
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -trimpath \
+    -ldflags="-w -s" \
+    -o /bin/worker \
+    ./cmd/worker
+
+# ── Runtime Stage ──
+FROM alpine:3.21 AS final
+
+RUN apk --no-cache add ca-certificates tzdata \
+    && addgroup -S appgroup \
+    && adduser -S -G appgroup -u 10001 appuser
+
+WORKDIR /app
+
+COPY --from=builder /bin/worker /app/worker
+
+USER appuser:appgroup
+
+ENTRYPOINT ["/app/worker"]

@@ -6,7 +6,7 @@ A complete guide to building an observable, resilient order processing system us
 
 **The Pitch:** "A production-grade order processing saga with observable failure recovery"
 
-This is your actual working project at `gitlab.com/jbirdkerr/temporal-order-processing`.
+This is your actual working project at `github.com/jbirdkerr/temporal-order-processing`.
 
 ---
 
@@ -26,8 +26,8 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/activity"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/domain"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/observability"
+	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
+	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
 )
 
 // PaymentResult represents the result of payment processing
@@ -101,8 +101,8 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/activity"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/domain"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/observability"
+	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
+	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
 )
 
 type FraudCheckResult struct {
@@ -166,8 +166,8 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/activity"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/domain"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/observability"
+	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
+	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
 )
 
 type InventoryResult struct {
@@ -247,8 +247,8 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/activity"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/domain"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/observability"
+	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
+	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
 )
 
 type ShipmentResult struct {
@@ -336,8 +336,8 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/activity"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/domain"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/observability"
+	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
+	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
 )
 
 func SendNotificationActivity(ctx context.Context, order *domain.Order, result *domain.WorkflowResult) error {
@@ -471,9 +471,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.temporal.io/sdk/client"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/domain"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/observability"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/workflow"
+	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
+	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
+	"github.com/jbirdkerr/temporal-order-processing/internal/workflow"
 )
 
 func main() {
@@ -587,9 +587,9 @@ import (
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/activity"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/observability"
-	"gitlab.com/jbirdkerr/temporal-order-processing/internal/workflow"
+	"github.com/jbirdkerr/temporal-order-processing/internal/activity"
+	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
+	"github.com/jbirdkerr/temporal-order-processing/internal/workflow"
 )
 
 func main() {
