@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/jbirdkerr/temporal-order-processing/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jbirdkerr/temporal-order-processing/actions/workflows/ci.yml)
 [![Go Version](https://img.shields.io/badge/go-1.25.4-blue.svg)](https://golang.org)
-[![Temporal](https://img.shields.io/badge/temporal-1.25.4-black.svg)](https://temporal.io)
+[![Temporal](https://img.shields.io/badge/temporal-1.48.0-black.svg)](https://temporal.io)
 
 An observable, resilient order processing saga built with **Temporal**, **Go**, and **OpenTelemetry**.
 
