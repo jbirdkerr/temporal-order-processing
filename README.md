@@ -1,6 +1,6 @@
 # Temporal Workflow Orchestration: Production-Grade Order Processing
 
-[![CI](https://github.com/jbirdkerr/temporal-order-processing/actions/workflows/ci.yml/badge.svg)](https://github.com/jbirdkerr/temporal-order-processing/actions/workflows/ci.yml)
+[![CI](https://github.com/jbirdkerr/temporal-order-processing/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jbirdkerr/temporal-order-processing/actions/workflows/ci.yml)
 [![Go Version](https://img.shields.io/badge/go-1.25.4-blue.svg)](https://golang.org)
 [![Temporal](https://img.shields.io/badge/temporal-1.25.4-black.svg)](https://temporal.io)
 
