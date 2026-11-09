@@ -1,4 +1,4 @@
-# Temporal Workflow Orchestration: Production-Grade Order Processing
+# Temporal Workflow Orchestration: Order Processing Saga
 
 [![CI](https://github.com/jbirdkerr/temporal-order-processing/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jbirdkerr/temporal-order-processing/actions/workflows/ci.yml)
 [![Go Version](https://img.shields.io/badge/go-1.25.4-blue.svg)](https://golang.org)
