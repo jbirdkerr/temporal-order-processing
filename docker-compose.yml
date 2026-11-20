@@ -93,6 +93,8 @@ services:
     build:
       context: .
       dockerfile: deploy/docker/Dockerfile.worker
+    ports:
+      - "9091:9091" # worker Prometheus metrics
     environment:
       TEMPORAL_HOST: temporal:7233
       OTEL_EXPORTER_OTLP_ENDPOINT: jaeger:4317

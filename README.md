@@ -45,7 +45,7 @@ flowchart TD
 - **Idempotency**: Workflow ID deduplication ensures orders are never double-processed.
 - **Full Observability**:
   - **Metrics**: Native Prometheus metrics for each activity and state transition.
-  - **Distributed Tracing**: OpenTelemetry (OTel) gRPC exporter compatible with Jaeger, Grafana Tempo, and OTel Collectors.
+  - **Distributed Tracing**: Temporal's OpenTelemetry interceptor links each API request, workflow, and activity into one trace, exported over OTLP gRPC (Jaeger, Grafana Tempo, or an OTel Collector).
   - **Workflow History**: Temporal Web UI for timeline inspection, replays, and execution state.
 - **Containerized & CI-Ready**: Multi-stage Docker builds, Docker Compose profiles, and GitHub Actions CI.
 
@@ -122,6 +122,7 @@ Once services are running, the following dashboards are accessible:
 | **Temporal UI** | [http://localhost:8233](http://localhost:8233) | Real-time workflow status, step timelines, and execution histories |
 | **REST API Server** | [http://localhost:8080](http://localhost:8080) | Order submission and status API |
 | **Prometheus** | [http://localhost:9090](http://localhost:9090) | Scraped metrics & Prometheus query browser |
+| **Worker metrics** | [http://localhost:9091/metrics](http://localhost:9091/metrics) | Activity counters (payments, inventory, shipping) scraped by Prometheus |
 | **Jaeger UI** | [http://localhost:16686](http://localhost:16686) | Distributed traces and span waterfall views |
 | **Grafana** | [http://localhost:3000](http://localhost:3000) | Dashboard analytics (Default login: `admin` / `admin`) |
 

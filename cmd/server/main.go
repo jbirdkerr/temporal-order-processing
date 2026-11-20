@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	"github.com/jbirdkerr/temporal-order-processing/internal/domain"
 	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
@@ -19,6 +20,7 @@ import (
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/interceptor"
 )
 
 func main() {
@@ -42,8 +44,14 @@ func main() {
 	}
 	log.Printf("Connecting to Temporal at %s", temporalHost)
 
+	tracingInterceptor, err := observability.TemporalTracingInterceptor()
+	if err != nil {
+		log.Fatalf("Failed to create Temporal tracing interceptor: %v", err)
+	}
+
 	c, err := client.Dial(client.Options{
-		HostPort: temporalHost,
+		HostPort:     temporalHost,
+		Interceptors: []interceptor.ClientInterceptor{tracingInterceptor},
 	})
 	if err != nil {
 		log.Fatalf("Failed to connect to Temporal: %v", err)
@@ -249,5 +257,14 @@ func main() {
 	r.Handle("/metrics", promhttp.Handler())
 
 	log.Printf("REST API listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	// Trace API requests, skipping health checks and Prometheus scrapes.
+	handler := otelhttp.NewHandler(r, "order-api",
+		otelhttp.WithSpanNameFormatter(func(_ string, req *http.Request) string {
+			return req.Method + " " + req.URL.Path
+		}),
+		otelhttp.WithFilter(func(req *http.Request) bool {
+			return req.URL.Path != "/health" && req.URL.Path != "/metrics"
+		}),
+	)
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
