@@ -5,12 +5,15 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/jbirdkerr/temporal-order-processing/internal/activity"
 	"github.com/jbirdkerr/temporal-order-processing/internal/observability"
 	"github.com/jbirdkerr/temporal-order-processing/internal/workflow"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/worker"
 )
 
@@ -28,6 +31,21 @@ func main() {
 		}
 	}()
 
+	// Activities increment the business metrics, so the worker exposes its own
+	// Prometheus endpoint (the API server's /metrics only sees API-side counters).
+	metricsAddr := os.Getenv("METRICS_ADDR")
+	if metricsAddr == "" {
+		metricsAddr = ":9091"
+	}
+	go func() {
+		mux := http.NewServeMux()
+		mux.Handle("/metrics", promhttp.Handler())
+		log.Printf("Worker metrics listening on %s", metricsAddr)
+		if err := http.ListenAndServe(metricsAddr, mux); err != nil {
+			log.Printf("Worker metrics server stopped: %v", err)
+		}
+	}()
+
 	// Connect to Temporal
 	temporalHost := os.Getenv("TEMPORAL_HOST")
 	if temporalHost == "" {
@@ -35,8 +53,14 @@ func main() {
 	}
 	log.Printf("Connecting to Temporal at %s", temporalHost)
 
+	tracingInterceptor, err := observability.TemporalTracingInterceptor()
+	if err != nil {
+		log.Fatalf("Failed to create Temporal tracing interceptor: %v", err)
+	}
+
 	c, err := client.Dial(client.Options{
-		HostPort: temporalHost,
+		HostPort:     temporalHost,
+		Interceptors: []interceptor.ClientInterceptor{tracingInterceptor},
 	})
 	if err != nil {
 		log.Fatalf("Failed to connect to Temporal: %v", err)

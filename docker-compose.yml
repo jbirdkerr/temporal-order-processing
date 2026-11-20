@@ -30,7 +30,8 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "tctl", "--address", "localhost:7233", "cluster", "health"]
+      # auto-setup binds the frontend to the container IP, not localhost.
+      test: ["CMD-SHELL", "temporal operator cluster health --address $$(hostname -i):7233"]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -92,6 +93,8 @@ services:
     build:
       context: .
       dockerfile: deploy/docker/Dockerfile.worker
+    ports:
+      - "9091:9091" # worker Prometheus metrics
     environment:
       TEMPORAL_HOST: temporal:7233
       OTEL_EXPORTER_OTLP_ENDPOINT: jaeger:4317

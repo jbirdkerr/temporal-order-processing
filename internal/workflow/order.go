@@ -155,8 +155,10 @@ func OrderWorkflow(ctx workflow.Context, order *domain.Order) (*domain.WorkflowR
 		timerFuture := workflow.NewTimer(timerCtx, 24*time.Hour)
 
 		s := workflow.NewSelector(ctx)
+		timedOut := false
 		s.AddFuture(timerFuture, func(f workflow.Future) {
 			// Timer fired — approval timed out; approved remains false.
+			timedOut = true
 		})
 		s.AddReceive(approvalChan, func(c workflow.ReceiveChannel, more bool) {
 			c.Receive(ctx, &approvalSignal)
@@ -184,7 +186,11 @@ func OrderWorkflow(ctx workflow.Context, order *domain.Order) (*domain.WorkflowR
 			}
 
 			result.Status = domain.OrderFailed
-			result.FailureReason = "Inventory approval timed out"
+			if timedOut {
+				result.FailureReason = "Inventory approval timed out"
+			} else {
+				result.FailureReason = "Inventory approval denied"
+			}
 			return result, nil
 		}
 

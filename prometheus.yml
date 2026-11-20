@@ -9,3 +9,10 @@ scrape_configs:
           - "server:8080"
           - "host.docker.internal:8080"
     metrics_path: /metrics
+
+  - job_name: "order-worker"
+    static_configs:
+      - targets:
+          - "worker:9091"
+          - "host.docker.internal:9091"
+    metrics_path: /metrics

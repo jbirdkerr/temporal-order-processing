@@ -304,7 +304,7 @@ func TestOrderWorkflow_InventoryApproval_Denied(t *testing.T) {
 	require.NoError(t, env.GetWorkflowResult(&result))
 
 	assert.Equal(t, domain.OrderFailed, result.Status)
-	assert.Contains(t, result.FailureReason, "approval timed out")
+	assert.Equal(t, "Inventory approval denied", result.FailureReason)
 
 	env.AssertExpectations(t)
 }
